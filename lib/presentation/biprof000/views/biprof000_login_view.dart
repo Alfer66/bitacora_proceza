@@ -1,45 +1,31 @@
 import 'package:bitacora_proceza/config/helpers/formatters/formatters.dart';
-import 'package:bitacora_proceza/config/theme/app_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class Biprof000LoginView extends StatelessWidget {
-
   final userController = TextEditingController();
 
   final passController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-  String text = '';
+  final Map<String, dynamic> response = {};
 
-  bool obscureText = true;
-  IconData iconPass = Icons.remove_red_eye;
+  Biprof000LoginView({super.key});
 
-  Map<String, dynamic> response = {};
-
-  void validExistUser() async {
-    /*
-    bool conexionInternet = await AppUtils().validaConexionInternet();
-    if (conexionInternet) {
-      await Sladmf001Service().deleteUsuariosProductores();
-      await Sladmf001Service().deleteUser();
+  bool validExistUser() {
+    if (userController.text == 'ALFER' && passController.text == '123.Hola') {
+      return true;
     }
-    bool exist = await Sladmf000Service().isExistUser();
-    if (exist) {
-      var responseToken = await Sladmf000Service().getToken();
-      InitApp.apiToken =
-          responseToken.isNotEmpty ? responseToken[0]['token'].toString() : '';
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/second', (Route<dynamic> route) => false);
-    }
-    */
+    throw 'Usuario o contraseña incorrectos';
   }
-
-  //const Biprof000LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    bool obscureText = true;
+    IconData iconPass = Icons.remove_red_eye;
+    //String text = '';
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -52,7 +38,7 @@ class Biprof000LoginView extends StatelessWidget {
 //            Image.asset(
 //              'assets/img/logo_agroapp.png',
 //            ),
-            const CircleAvatar(child: Icon(Icons.person), radius: 30),
+            const CircleAvatar(radius: 30, child: Icon(Icons.person)),
             const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 450),
@@ -92,22 +78,19 @@ class Biprof000LoginView extends StatelessWidget {
                             border: const OutlineInputBorder(),
                             labelText: 'Contraseña',
                             hintText: '******',
-                            
                             suffixIcon: IconButton(
-                            icon: Icon(iconPass),
+                              icon: Icon(iconPass),
                               onPressed: () {
-                                  obscureText = !obscureText;
-                                  if (obscureText) {
-                                    iconPass = Icons.remove_red_eye;
-                                  } else {
-                                    iconPass = Icons.vpn_key;
-                                  }
-                                  //setState(() {});
+                                obscureText = !obscureText;
+                                if (obscureText) {
+                                  iconPass = Icons.remove_red_eye;
+                                } else {
+                                  iconPass = Icons.vpn_key;
+                                }
+                                //setState(() {});
                               },
                             ),
                           ),
-                          
-                          //isForm: true,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Requerido';
@@ -117,52 +100,42 @@ class Biprof000LoginView extends StatelessWidget {
                           controller: passController,
                         )),
                     ElevatedButton(
-                      style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14.0)),
-                      onPressed: () async {
+                      style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 14.0)),
+                      onPressed: () {
                         //Validar que los campos de usuario y contraseña esten llenos.
                         if (_formKey.currentState!.validate()) {
-                        //  bool conexionInternet =
-                        //      await AppUtils().validaConexionInternet();
-                        //  if (conexionInternet) {
-                        //    showCupertinoDialog(
-                        //        context: context,
-                        //        builder: ((context) => LoboLoadingDialog(
-                        //            title: 'SIAL AGROAPP',
-                        //            text: Provider.of<AuthProvider>(context)
-                        //                .text)));
-                        //    authProvider.setLoginText('Iniciando sesion');
-                        //    try {
-                        //      // Enviar peticion para validar usuario en el servidor.
-                        //      response = await Sladmf000Service.processLogin({
-                        //        'audience': AppConfig.of(context)!.audience,
-                        //        'createdBy': AppConfig.of(context)!.createdBy,
-                        //        'cveUsuario': userController.text,
-                        //        'password': passController.text,
-                        //        'expirationDate': 'true'
-                        //      }, authProvider);
-                              if (response["success"]) {
-                                Navigator.pushNamedAndRemoveUntil(context,
-                                    '/second', (Route<dynamic> route) => false);
+                          
+                          showCupertinoDialog(
+                            context: context,
+                            builder: ((context) => const Dialog(
+                              child: Column(
+                                children: [
+                                  Text('Iniciando sesion'),
+                                  Text(''),
+                                ],
+                              ),
+                            ))
+                          );
+                          try {
+                            // Enviar peticion para validar usuario en el servidor.
+                            if (validExistUser()) {
+                              Navigator.pushNamedAndRemoveUntil(context,'/menu', (Route<dynamic> route) => false);
                               }
-                        //    } catch (e) {
-                        //      await Sladmf001Service()
-                        //          .deleteUsuariosProductores();
-                        //      await Sladmf001Service().deleteUser();
-                              Navigator.of(context).pop();
-                        //      print(e.toString());
-                        //      LoboMessageDialog(
-                        //              text:
-                        //                  'Problema al iniciar sesión: ${e.toString()}',
-                        //              context: context)
-                        //          .show();
-                        //    }
-                          } else {
-                        //    LoboMessageDialog(
-                        //            text: 'Sin conexión a internet',
-                        //            context: context)
-                        //        .show();
-                        //  }
+                          } catch (e) {
+                            Navigator.of(context).pop();
+                            
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Problema al iniciar sesión: ${e.toString()}.'),
+                              ),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sin conexión a internet.'),
+                            ),
+                          );
                         }
                       },
                       child: const Text('INICIAR SESIÓN'),
@@ -176,15 +149,15 @@ class Biprof000LoginView extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
-        color:  Theme.of(context).colorScheme.primary,
-        child: Row(
+        color: Theme.of(context).colorScheme.primary,
+        child:const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             //Image.asset(
             //  'assets/img/ic_lobo_white_foreground.png',
             //  width: 40.0,
             //),
-            const Text(
+            Text(
               '2023 Alfer Romero Villa',
               style: TextStyle(color: Colors.white),
             )
