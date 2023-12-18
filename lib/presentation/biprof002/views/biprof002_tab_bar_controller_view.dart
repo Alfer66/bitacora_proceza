@@ -31,15 +31,15 @@ class Biprof002TabBarControllerView extends StatelessWidget {
             dividerColor: Colors.transparent,
             tabs: <Widget>[
               Tab(
-                text: 'Proceza',
+                text: 'PROCEZA',
                 icon: Icon(Icons.flight),
               ),
               Tab(
-                text: 'Vacio1',
+                text: 'SEGUIDORES',
                 icon: Icon(Icons.luggage),
               ),
               Tab(
-                text: 'Vacio2',
+                text: 'Vacio1',
                 icon: Icon(Icons.explore),
               ),
             ],
